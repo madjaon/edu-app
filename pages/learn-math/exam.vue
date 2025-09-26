@@ -15,7 +15,7 @@ function playSound(correct: boolean) {
 }
 
 async function downloadFile() {
-  const path = `https://web-production-8039.up.railway.app/generate?count=${count.value}`
+  const path = `https://createmathdocx.onrender.com/generate?count=${count.value}`
   try {
     const res = await fetch(path)
     if (!res.ok)

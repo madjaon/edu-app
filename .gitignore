@@ -32,6 +32,8 @@ public/data/*
 public/svg/*
 !public/svg/.gitkeep
 
+.firebase/*
+
 .gradle/
 android.keystore
 app-release-bundle.aab
