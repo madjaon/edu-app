@@ -28,7 +28,7 @@ onMounted(() => {
 
 <template>
   <div class="absolute inset-0 flex flex-col items-center justify-center p-2">
-    <div class="bg-white/80 rounded-2xl shadow-lg p-8 text-center w-full">
+    <div class="bg-white/20 rounded-2xl shadow-lg p-8 text-center w-full">
       <h2 class="text-5xl sm:text-5xl font-bold text-green-600 mb-6">
         🎉 Giỏi lắm bé yêu! 🎉
       </h2>

@@ -19,6 +19,7 @@ let particles: any[] = []
 let alphabet: string[] = []
 let currentIndex = 0
 const colors = ['#ff6b6b', '#6bcBef', '#ffe66d', '#48dbfb', '#1dd1a1', '#f368e0']
+let animationId: number | null = null
 
 function createBubble(letter: string) {
   const angle = Math.random() * Math.PI * 2
@@ -190,7 +191,7 @@ function animate() {
   ctx.fillText(alphabet[currentIndex] || '', width / 2, height / 2)
   ctx.restore()
 
-  requestAnimationFrame(animate)
+  animationId = requestAnimationFrame(animate)
 }
 
 function handleClick(e: MouseEvent) {
@@ -273,6 +274,10 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('click', handleClick)
   window.removeEventListener('resize', resize)
+  if (animationId)
+    cancelAnimationFrame(animationId)
+  correctSound?.unload()
+  wrongSound?.unload()
 })
 </script>
 

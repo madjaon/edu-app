@@ -18,6 +18,16 @@ const isLoading = ref(false)
 const difficulty = ref<number>(2)
 const orientation = ref<'portrait' | 'landscape'>('portrait')
 
+// danh sách ảnh mẫu (6 ảnh)
+const sampleImages = [
+  '/images/sample1.jpg',
+  '/images/sample2.jpg',
+  '/images/sample3.jpg',
+  '/images/sample4.jpg',
+  '/images/sample5.jpg',
+  '/images/sample6.jpg',
+]
+
 function playSoundCorrect() {
   const sound = new Howl({
     src: '/sounds/correct.mp3',
@@ -250,14 +260,10 @@ function resizeCanvas() {
   }
 }
 
-function onFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  if (!input.files || !input.files[0])
-    return
-
+function loadImageFromSrc(src: string) {
   isLoading.value = true
-  const file = input.files[0]
   const img = new Image()
+  img.crossOrigin = 'anonymous'
   img.onload = () => {
     imageLoaded.value = true
     isLoading.value = false
@@ -281,7 +287,15 @@ function onFileChange(e: Event) {
   img.onerror = () => {
     isLoading.value = false
   }
-  img.src = URL.createObjectURL(file)
+  img.src = src
+}
+
+function onFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (!input.files || !input.files[0])
+    return
+  const file = input.files[0]
+  loadImageFromSrc(URL.createObjectURL(file))
 }
 
 function updateOrientation() {
@@ -338,55 +352,56 @@ onBeforeUnmount(() => {
       <h1 class="text-3xl font-bold text-gray-700 mb-6">
         Bé hãy chọn ảnh để chơi 📸
       </h1>
+
+      <!-- nút chọn ảnh -->
       <label
         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg cursor-pointer"
       >
         Chọn ảnh
-        <input
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="onFileChange"
-        >
+        <input type="file" accept="image/*" class="hidden" @change="onFileChange">
       </label>
+
+      <!-- grid ảnh mẫu -->
+      <div class="mt-6 grid grid-cols-3 gap-3 max-w-[320px]">
+        <img
+          v-for="(img, i) in sampleImages"
+          :key="i"
+          :src="img"
+          class="w-24 h-24 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-400 transition"
+          @click="loadImageFromSrc(img)"
+        >
+      </div>
     </div>
 
     <!-- Canvas game -->
     <canvas v-show="imageLoaded" ref="canvas" class="touch-none z-10" />
 
-    <SuccessMessage v-if="gameOver && imageLoaded" class="absolute inset-0 flex flex-col items-center justify-center z-20" @click="restartGame" />
+    <SuccessMessage
+      v-if="gameOver && imageLoaded"
+      class="absolute inset-0 flex flex-col items-center justify-center z-20"
+      @click="restartGame"
+    />
 
     <!-- Controls -->
     <div
       v-if="imageLoaded"
       class="absolute z-30 flex bg-white/80 rounded-lg shadow p-3 gap-2"
-      :class="
-        orientation === 'portrait'
-          ? 'bottom-4 left-1/2 -translate-x-1/2 flex-row'
-          : 'right-4 top-1/2 -translate-y-1/2 flex-col'
-      "
+      :class="orientation === 'portrait'
+        ? 'bottom-4 left-1/2 -translate-x-1/2 flex-row'
+        : 'right-4 top-1/2 -translate-y-1/2 flex-col'"
     >
       <label
         class="bg-blue-300 rounded px-3 py-2 shadow text-sm flex items-center gap-2 cursor-pointer"
       >
         <span class="text-sm">Chọn ảnh</span>
-        <input
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="onFileChange"
-        >
+        <input type="file" accept="image/*" class="hidden" @change="onFileChange">
       </label>
 
       <label
-        class="bg-yellow-300 rounded px-3 py-2 bg-white shadow text-sm flex items-center gap-2"
+        class="bg-yellow-300 rounded px-3 py-2 shadow text-sm flex items-center gap-2"
       >
         <span class="text-sm">Độ khó</span>
-        <select
-          v-model.number="difficulty"
-          class="ml-2 outline-none text-sm"
-          @change="restartGame"
-        >
+        <select v-model.number="difficulty" class="ml-2 outline-none text-sm" @change="restartGame">
           <option :value="2">2 x 2</option>
           <option :value="3">3 x 3</option>
           <option :value="4">4 x 4</option>
@@ -394,16 +409,10 @@ onBeforeUnmount(() => {
         </select>
       </label>
 
-      <button
-        class="bg-pink-300 px-3 py-2 rounded shadow text-sm"
-        @click="shufflePieces()"
-      >
+      <button class="bg-pink-300 px-3 py-2 rounded shadow text-sm" @click="shufflePieces()">
         Trộn
       </button>
-      <button
-        class="bg-green-300 px-3 py-2 rounded shadow text-sm"
-        @click="showPreview()"
-      >
+      <button class="bg-green-300 px-3 py-2 rounded shadow text-sm" @click="showPreview()">
         Xem mẫu
       </button>
     </div>

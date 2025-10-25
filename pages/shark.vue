@@ -372,6 +372,8 @@ function drawShark() {
   ctx.restore()
 }
 
+let animationId: number
+
 function animate() {
   ctx.clearRect(0, 0, width, height)
   updateBubbles()
@@ -391,7 +393,7 @@ function animate() {
   ctx.fillText(alphabet[currentIndex] || '', width / 2, height / 2)
   ctx.restore()
 
-  requestAnimationFrame(animate)
+  animationId = requestAnimationFrame(animate)
 }
 
 function getThreeBubblesForCurrent() {
@@ -541,6 +543,18 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('click', handleClick)
   window.removeEventListener('resize', resize)
+})
+
+onBeforeUnmount(() => {
+  // Hủy vòng lặp game
+  cancelAnimationFrame(animationId)
+
+  // Dừng tất cả âm thanh
+  Howler.stop()
+
+  // (Tùy chọn) dọn dẹp dữ liệu để tránh rò rỉ bộ nhớ
+  bubbles.length = 0
+  particles.length = 0
 })
 </script>
 
